@@ -21,14 +21,13 @@ public class PruebaGUI extends javax.swing.JFrame {
     
     public JPanel panelSeleccionado;
     public Mercancia panelDeMercancia;
-    public static WeightedGraphInterface<Truck, Service, Merchandise> graph = new WeightedGraph<Truck, Service, Merchandise>();
-    private static Truck[] trucks = new Truck[50];
-    private static Merchandise[] mercancias = new Merchandise[50];
+    public static WeightedGraphInterface<Food, Type> graph = new WeightedGraph<Food, Type>();
+    private static Food[] foods = new Food[50];
     private static int numCam=0, numMer=0;
     private BuscarRuta ruta;
     
-    	private static void shortestPaths(WeightedGraphInterface<Truck, Service, Merchandise> graph,
-			Truck startVertex  )
+    	private static void shortestPaths(WeightedGraphInterface<Food, Type> graph,
+			Food startVertex  )
 	{
 		Route flight;
 		Route saveFlight;        
@@ -37,7 +36,7 @@ public class PruebaGUI extends javax.swing.JFrame {
 
 		PriQueueInterface<Route> pq = new Heap<Route>(20);  
 		Truck vertex;
-		UnboundedQueueInterface<Truck, Service, Merchandise> vertexQueue = new LinkedUnbndQueue<Truck, Service, Merchandise>();
+		UnboundedQueueInterface<Food, Type> vertexQueue = new LinkedUnbndQueue<Food, Type>();
 
 		graph.clearMarks();
 		saveFlight = new Route(startVertex, startVertex, 0);
@@ -78,17 +77,17 @@ public class PruebaGUI extends javax.swing.JFrame {
 		System.out.println();
 	}
 	
-	private static <T> boolean isPath(WeightedGraphInterface<Truck, Service, Merchandise> graph,
+	private static <T> boolean isPath(WeightedGraphInterface<Food, Type> graph,
 			Truck startVertex, 
 			Merchandise endVertex)
 
 	{
-		UnboundedStackInterface<Truck> stack = new LinkedStack<Truck>();
-		UnboundedQueueInterface<Truck, Service, Merchandise> vertexQueue = 
-				new LinkedUnbndQueue<Truck, Service, Merchandise>();
+		UnboundedStackInterface<Food> stack = new LinkedStack<Food>();
+		UnboundedQueueInterface<Food, Type> vertexQueue = 
+				new LinkedUnbndQueue<Food, Type>();
 
 		boolean found = false;
-		Truck vertex;
+		Food vertex;
 		T item;
 
 		graph.clearMarks();
@@ -118,16 +117,16 @@ public class PruebaGUI extends javax.swing.JFrame {
 	}
 	
 	
-	private static <T> boolean isPath2(WeightedGraphInterface<Truck, Service, Merchandise> graph,
-			Truck startVertex, 
-			Merchandise endVertex    )
+	private static <T> boolean isPath2(WeightedGraphInterface<Food, Type> graph,
+			Food startVertex, 
+			Type endVertex    )
 
 	{
-		UnboundedQueueInterface<Truck, Service, Merchandise> queue = new LinkedUnbndQueue<Truck, Service, Merchandise>();
-		UnboundedQueueInterface<Truck, Service, Merchandise> vertexQueue = new LinkedUnbndQueue<Truck, Service, Merchandise>();
+		UnboundedQueueInterface<Food, Type> queue = new LinkedUnbndQueue<Food, Type>();
+		UnboundedQueueInterface<Food, Tyep> vertexQueue = new LinkedUnbndQueue<Food, Type>();
 
 		boolean found = false;
-		Truck vertex;
+		Food vertex;
 		T item;
 
 		graph.clearMarks();
@@ -159,68 +158,26 @@ public class PruebaGUI extends javax.swing.JFrame {
         initComponents();
     }
     
-    public void agregarMercancia(Merchandise mer){
-        this.graph.addVertex3(mer);
-        this.mercancias[numMer]= mer;
-        numMer ++;
-        setText(this.graph.toString());
-    }
-    
-    public void agregarCamion(Truck t){
+    public void agregarCamion(Food t){
         this.graph.addVertex(t);
-        trucks[numCam] = t;
+        foods[numCam] = t;
         numCam++;
         setText(this.graph.toString());
     }
     
-    public void agregarServicio(Service ser, int price, String chofer,String merca){
-       this.graph.addVertex2(ser);
-       for (int i=0; i<trucks.length; i++){
-           if (trucks[i]!=null){
-                if (trucks[i].getName().equals(chofer)){
-                this.graph.addEdge(trucks[i], ser, price);
-                } 
+    public void agregarServicio(Type type, int price){
+       this.graph.addVertex2(type);
+       for (int i=0; i<foods.length; i++){
+           if (foods[i]!=null){
+                this.graph.addEdge(foods[i], type, price);
+                 
            }
 
        }
        
-       for (int i=0; i<mercancias.length; i++){
-           if (mercancias[i]!=null){
-                if (mercancias[i].getName().equals(merca)){
-                this.graph.addEdge3(ser, mercancias[i], 0);
-                } 
-           }
-
-       }
        setText(this.graph.toString());
        jLabel1.setText(this.graph.sortPrices()+ "");
                
-    }
-    
-    public void searchMer(String chofe,String mer){
-        Truck camioncito = null;
-        Merchandise merca =  null; 
-        for (int i=0; i<trucks.length; i++){
-           if (trucks[i]!=null){
-                if (trucks[i].getName().equals(chofe)){
-                camioncito= trucks[i];
-                } 
-           }
-
-       }
-       
-       for (int i=0; i<mercancias.length; i++){
-           if (mercancias[i]!=null){
-                if (mercancias[i].getName().equals(mer)){
-                    merca = mercancias[i];
-                } 
-           }
-
-       }
-        camioncito.setNumMer(merca.getNumber());
-        boolean result = isPath(graph, camioncito, merca);
-        ruta.setLabel(result);
-        
     }
     
     public void setPanelRuta(BuscarRuta ruta){
@@ -229,19 +186,7 @@ public class PruebaGUI extends javax.swing.JFrame {
     
     public void changePanel(String panelName){
         
-        if(panelName == "Merchandises"){
-            this.panelDeMercancia = new Mercancia(this);
-            panelDeMercancia.setSize(680, 120);
-            panelDeMercancia.setLocation(5, 5);
-            
-            jPrincipalPanel.removeAll();
-            jPrincipalPanel.add(panelDeMercancia,BorderLayout.CENTER);
-            jPrincipalPanel.revalidate();
-            jPrincipalPanel.repaint();
-            
-        }
-        
-        if(panelName == "Services"){
+        if(panelName == "Type"){
             panelSeleccionado = new Servicios(this);
             panelSeleccionado.setSize(680, 120);
             panelSeleccionado.setLocation(5, 5);
@@ -252,7 +197,7 @@ public class PruebaGUI extends javax.swing.JFrame {
             jPrincipalPanel.repaint();
         }
         
-        if(panelName == "Trucks"){
+        if(panelName == "Food"){
             panelSeleccionado= new Camiones(this);
             panelSeleccionado.setSize(680, 120);
             panelSeleccionado.setLocation(5, 5);
@@ -263,16 +208,6 @@ public class PruebaGUI extends javax.swing.JFrame {
             jPrincipalPanel.repaint();
         }
         
-        if(panelName == "Search of Mer."){
-            panelSeleccionado= new BuscarRuta(this);
-            panelSeleccionado.setSize(680, 120);
-            panelSeleccionado.setLocation(5, 5);
-            
-            jPrincipalPanel.removeAll();
-            jPrincipalPanel.add(panelSeleccionado,BorderLayout.CENTER);
-            jPrincipalPanel.revalidate();
-            jPrincipalPanel.repaint();
-        }
     }
     
     public int getNumSer(){
@@ -315,7 +250,7 @@ public class PruebaGUI extends javax.swing.JFrame {
             .addGap(0, 120, Short.MAX_VALUE)
         );
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Services", "Trucks", "Merchandises", "Search of Mer.", " " }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Type", "Food"}));
         jComboBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBox1ActionPerformed(evt);
@@ -434,17 +369,19 @@ public class PruebaGUI extends javax.swing.JFrame {
         
         
 		
-		Truck t = new Truck("Luis Garcia", 99543, 4567);
+		Food t = new Food("Pozole", 3);
 		
-                trucks[numCam] = t;
+                foods[numCam] = t;
                 
                 numCam++;
 		
-		Truck t2 = new Truck("Ramon Corona", 1012, 4599);
+		Food t2 = new Food("Sushi", 5);
 		
-                trucks[numCam] = t2;
+                foods[numCam] = t2;
                 
                 numCam++;
+	    
+	    
 		
 		Service s = new Service ("Luisa Inc.", "Acapulco", 1);
 		
